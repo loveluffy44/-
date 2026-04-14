@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客服管理平台 - ER关系图</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #EEF1FF;
+      --secondary: #10B981;
+      --secondary-light: #ECFDF5;
+      --warning: #F59E0B;
+      --warning-light: #FFFBEB;
+      --danger: #EF4444;
+      --danger-light: #FEF2F2;
+      --purple: #8B5CF6;
+      --purple-light: #F5F3FF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+      color: var(--gray-800);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+      color: white;
+      padding: 24px 32px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    .legend {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 32px;
+      align-items: center;
+    }
+    
+    .legend-title {
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-right: 8px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+    
+    .diagram-container {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    
+    .diagram-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+    }
+    
+    .stat-card.user { border-left-color: var(--primary); }
+    .stat-card.complaint { border-left-color: var(--warning); }
+    .stat-card.aftersale { border-left-color: var(--secondary); }
+    .stat-card.auth { border-left-color: var(--purple); }
+    .stat-card.ads { border-left-color: var(--danger); }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    
+    .stat-card.user .stat-icon { background: var(--primary-light); }
+    .stat-card.complaint .stat-icon { background: var(--warning-light); }
+    .stat-card.aftersale .stat-icon { background: var(--secondary-light); }
+    .stat-card.auth .stat-icon { background: var(--purple-light); }
+    .stat-card.ads .stat-icon { background: var(--danger-light); }
+    
+    .stat-title {
+      font-weight: 700;
+      color: var(--gray-700);
+    }
+    
+    .stat-count {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--gray-800);
+      margin-bottom: 8px;
+    }
+    
+    .stat-tables {
+      font-size: 13px;
+      color: var(--gray-500);
+      line-height: 1.8;
+    }
+    
+    .relation-table {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    
+    .relation-table h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 16px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    th {
+      background: var(--gray-50);
+      font-weight: 600;
+      color: var(--gray-700);
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background: var(--gray-50);
+    }
+    
+    .pk { 
+      background: #FEE2E2; 
+      color: #DC2626; 
+      padding: 2px 8px; 
+      border-radius: 4px; 
+      font-size: 11px; 
+      font-weight: 600;
+    }
+    
+    .fk { 
+      background: #DBEAFE; 
+      color: #2563EB; 
+      padding: 2px 8px; 
+      border-radius: 4px; 
+      font-size: 11px; 
+      font-weight: 600;
+    }
+    
+    .idx { 
+      background: #F3E8FF; 
+      color: #7C3AED; 
+      padding: 2px 8px; 
+      border-radius: 4px; 
+      font-size: 11px; 
+      font-weight: 600;
+    }
+    
+    .relation-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .relation-1n { background: #ECFDF5; color: #059669; }
+    .relation-11 { background: #EEF1FF; color: #4F46E5; }
+    .relation-nn { background: #FFFBEB; color: #D97706; }
+    
+    .flow-section {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    
+    .flow-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 16px;
+    }
+    
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .flow-card {
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .flow-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .flow-card.auto { border-left: 4px solid var(--secondary); }
+    .flow-card.manual { border-left: 4px solid var(--warning); }
+    
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+    
+    .flow-step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    
+    .flow-arrow {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    
+    @media (max-width: 768px) {
+      .container { padding: 16px; }
+      .header { padding: 20px; }
+      .legend { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 客服管理平台 - 数据库ER关系图</h1>
+    <p>25张核心表 · 5大模块 · 完整业务闭环</p>
+  </div>
+  
+  <div class="container">
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+      <div class="stat-card user">
+        <div class="stat-header">
+          <div class="stat-icon">👤</div>
+          <div class="stat-title">用户中心</div>
+        </div>
+        <div class="stat-count">5</div>
+        <div class="stat-tables">
+          user_info · user_membership<br>
+          user_tag_relation · user_behavior_record<br>
+          user_call_record
+        </div>
+      </div>
+      
+      <div class="stat-card complaint">
+        <div class="stat-header">
+          <div class="stat-icon">🎫</div>
+          <div class="stat-title">投诉中心</div>
+        </div>
+        <div class="stat-count">3</div>
+        <div class="stat-tables">
+          complaint_record<br>
+          complaint_channel_source<br>
+          complaint_operation_log
+        </div>
+      </div>
+      
+      <div class="stat-card aftersale">
+        <div class="stat-header">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-title">售后处理</div>
+        </div>
+        <div class="stat-count">5</div>
+        <div class="stat-tables">
+          refund_record · compensation_record<br>
+          approval_record · approval_flow_detail<br>
+          membership_adjust_record
+        </div>
+      </div>
+      
+      <div class="stat-card auth">
+        <div class="stat-header">
+          <div class="stat-icon">🔐</div>
+          <div class="stat-title">权限管理</div>
+        </div>
+        <div class="stat-count">3</div>
+        <div class="stat-tables">
+          cs_staff · cs_role<br>
+          cs_staff_role_relation
+        </div>
+      </div>
+      
+      <div class="stat-card ads">
+        <div class="stat-header">
+          <div class="stat-icon">📈</div>
+          <div class="stat-title">分析主题(ADS)</div>
+        </div>
+        <div class="stat-count">5</div>
+        <div class="stat-tables">
+          ads_complaint_theme · ads_user_theme<br>
+          ads_channel_theme · ads_staff_performance_theme<br>
+          ads_refund_theme
+        </div>
+      </div>
+    </div>
+    
+    <!-- 图例 -->
+    <div class="legend">
+      <span class="legend-title">图例说明:</span>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #4F46E5;"></div>
+        <span>用户中心</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #F59E0B;"></div>
+        <span>投诉中心</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #10B981;"></div>
+        <span>售后处理</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #8B5CF6;"></div>
+        <span>权限管理</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #EF4444;"></div>
+        <span>分析主题</span>
+      </div>
+      <div class="legend-item">
+        <span class="pk">PK</span>
+        <span>主键</span>
+      </div>
+      <div class="legend-item">
+        <span class="fk">FK</span>
+        <span>外键</span>
+      </div>
+    </div>
+    
+    <!-- ER图 -->
+    <div class="diagram-container">
+      <div class="diagram-title">🗂️ 核心实体关系图</div>
+      <div class="mermaid">
+erDiagram
+    %% 用户中心
+    USER_INFO {
+        bigint id PK
+        varchar user_id UK
+        varchar phone
+        varchar email
+        varchar nickname
+        tinyint user_status
+        tinyint risk_level
+        json tags
+    }
+    
+    USER_MEMBERSHIP {
+        bigint id PK
+        varchar user_id FK
+        tinyint membership_type
+        tinyint membership_status
+        datetime start_time
+        datetime end_time
+    }
+    
+    USER_TAG_RELATION {
+        bigint id PK
+        varchar user_id FK
+        varchar tag_code
+        datetime expire_time
+    }
+    
+    USER_BEHAVIOR_RECORD {
+        bigint id PK
+        varchar user_id FK
+        varchar behavior_type
+        datetime behavior_time
+    }
+    
+    USER_CALL_RECORD {
+        bigint id PK
+        varchar user_id FK
+        varchar phone_number
+        varchar call_id UK
+        bigint complaint_id FK
+    }
+    
+    %% 投诉中心
+    COMPLAINT_RECORD {
+        bigint id PK
+        varchar complaint_no UK
+        varchar user_id FK
+        tinyint channel_type
+        bigint channel_source_id FK
+        varchar external_complaint_id
+        tinyint complaint_type
+        tinyint complaint_status
+        tinyint refund_type
+        decimal refund_amount
+        tinyint refund_status
+        varchar order_id
+        bigint handler_id FK
+        datetime sla_deadline
+    }
+    
+    COMPLAINT_CHANNEL_SOURCE {
+        bigint id PK
+        bigint complaint_id FK
+        tinyint channel_type
+        tinyint source_type
+        varchar external_id
+        json raw_data
+    }
+    
+    COMPLAINT_OPERATION_LOG {
+        bigint id PK
+        bigint complaint_id FK
+        tinyint operation_type
+        bigint operator_id FK
+    }
+    
+    %% 售后处理
+    REFUND_RECORD {
+        bigint id PK
+        varchar refund_no UK
+        bigint complaint_id FK
+        varchar user_id FK
+        varchar order_id
+        tinyint refund_type
+        tinyint refund_status
+        decimal refund_amount
+        bigint approver_id FK
+    }
+    
+    COMPENSATION_RECORD {
+        bigint id PK
+        varchar compensation_no UK
+        bigint complaint_id FK
+        varchar user_id FK
+        tinyint compensation_type
+        tinyint compensation_status
+    }
+    
+    APPROVAL_RECORD {
+        bigint id PK
+        varchar approval_no UK
+        tinyint business_type
+        bigint business_id
+        tinyint approval_status
+        bigint approver_id FK
+    }
+    
+    APPROVAL_FLOW_DETAIL {
+        bigint id PK
+        bigint approval_id FK
+        bigint approver_id FK
+        tinyint level
+    }
+    
+    MEMBERSHIP_ADJUST_RECORD {
+        bigint id PK
+        varchar adjust_no UK
+        bigint complaint_id FK
+        varchar user_id FK
+        tinyint adjust_type
+    }
+    
+    %% 权限管理
+    CS_STAFF {
+        bigint id PK
+        varchar staff_no UK
+        varchar login_name UK
+        varchar staff_name
+        bigint department_id
+        tinyint staff_status
+    }
+    
+    CS_ROLE {
+        bigint id PK
+        varchar role_code UK
+        varchar role_name
+        json permissions
+    }
+    
+    CS_STAFF_ROLE_RELATION {
+        bigint id PK
+        bigint staff_id FK
+        bigint role_id FK
+    }
+    
+    %% 关系定义
+    USER_INFO ||--o{ USER_MEMBERSHIP : "拥有"
+    USER_INFO ||--o{ USER_TAG_RELATION : "标记"
+    USER_INFO ||--o{ USER_BEHAVIOR_RECORD : "产生"
+    USER_INFO ||--o{ USER_CALL_RECORD : "通话"
+    USER_INFO ||--o{ COMPLAINT_RECORD : "投诉"
+    USER_INFO ||--o{ REFUND_RECORD : "退款"
+    USER_INFO ||--o{ COMPENSATION_RECORD : "补偿"
+    USER_INFO ||--o{ MEMBERSHIP_ADJUST_RECORD : "调整"
+    
+    COMPLAINT_RECORD ||--|| COMPLAINT_CHANNEL_SOURCE : "来源"
+    COMPLAINT_RECORD ||--o{ COMPLAINT_OPERATION_LOG : "操作"
+    COMPLAINT_RECORD ||--o{ REFUND_RECORD : "关联"
+    COMPLAINT_RECORD ||--o{ COMPENSATION_RECORD : "关联"
+    COMPLAINT_RECORD ||--o{ MEMBERSHIP_ADJUST_RECORD : "关联"
+    
+    REFUND_RECORD ||--o{ APPROVAL_RECORD : "审批"
+    COMPENSATION_RECORD ||--o{ APPROVAL_RECORD : "审批"
+    MEMBERSHIP_ADJUST_RECORD ||--o{ APPROVAL_RECORD : "审批"
+    APPROVAL_RECORD ||--o{ APPROVAL_FLOW_DETAIL : "明细"
+    
+    CS_STAFF ||--o{ CS_STAFF_ROLE_RELATION : "担任"
+    CS_ROLE ||--o{ CS_STAFF_ROLE_RELATION : "分配"
+    CS_STAFF ||--o{ COMPLAINT_RECORD : "处理"
+    CS_STAFF ||--o{ COMPLAINT_OPERATION_LOG : "操作"
+    CS_STAFF ||--o{ APPROVAL_RECORD : "审批"
+      </div>
+    </div>
+    
+    <!-- 业务流程 -->
+    <div class="flow-section">
+      <h3>🔄 核心业务流程</h3>
+      <div class="flow-grid">
+        <div class="flow-card auto">
+          <h4>🤖 自动退款流程</h4>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <span class="flow-step-num">1</span>
+              <span>第三方平台投诉接入</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">2</span>
+              <span>创建 complaint_record<br><small>(refund_type=1 自动退款)</small></span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">3</span>
+              <span>系统自动创建 refund_record</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">4</span>
+              <span>调用支付接口退款</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">5</span>
+              <span>更新投诉状态为已解决</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flow-card manual">
+          <h4>👤 手动退款流程</h4>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <span class="flow-step-num">1</span>
+              <span>投诉接入(任意渠道)</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">2</span>
+              <span>创建 complaint_record<br><small>(refund_type=2 手动退款)</small></span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">3</span>
+              <span>运营申请退款 → 创建 refund_record</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">4</span>
+              <span>创建 approval_record 审批</span>
+            </div>
+            <div class="flow-arrow">⬇️</div>
+            <div class="flow-step">
+              <span class="flow-step-num">5</span>
+              <span>主管审批通过 → 执行退款</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 表关系详情 -->
+    <div class="relation-table">
+      <h3>🔗 表关系详情</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>主表</th>
+            <th>关联表</th>
+            <th>关联字段</th>
+            <th>关系类型</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>user_info</strong></td>
+            <td>complaint_record</td>
+            <td>user_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一个用户可有多条投诉</td>
+          </tr>
+          <tr>
+            <td><strong>user_info</strong></td>
+            <td>refund_record</td>
+            <td>user_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一个用户可有多笔退款</td>
+          </tr>
+          <tr>
+            <td><strong>user_info</strong></td>
+            <td>user_membership</td>
+            <td>user_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一个用户可有多段会员记录</td>
+          </tr>
+          <tr>
+            <td><strong>complaint_record</strong></td>
+            <td>complaint_channel_source</td>
+            <td>channel_source_id</td>
+            <td><span class="relation-type relation-11">1:1</span></td>
+            <td>一条投诉对应一个渠道来源</td>
+          </tr>
+          <tr>
+            <td><strong>complaint_record</strong></td>
+            <td>refund_record</td>
+            <td>complaint_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一条投诉可有多笔退款(部分退)</td>
+          </tr>
+          <tr>
+            <td><strong>complaint_record</strong></td>
+            <td>complaint_operation_log</td>
+            <td>complaint_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一条投诉有多条操作日志</td>
+          </tr>
+          <tr>
+            <td><strong>refund_record</strong></td>
+            <td>approval_record</td>
+            <td>business_id + business_type</td>
+            <td><span class="relation-type relation-11">1:1</span></td>
+            <td>一笔退款对应一个审批单</td>
+          </tr>
+          <tr>
+            <td><strong>approval_record</strong></td>
+            <td>approval_flow_detail</td>
+            <td>approval_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一个审批单有多级审批明细</td>
+          </tr>
+          <tr>
+            <td><strong>cs_staff</strong></td>
+            <td>cs_staff_role_relation</td>
+            <td>staff_id</td>
+            <td><span class="relation-type relation-nn">N:M</span></td>
+            <td>人员与角色的多对多关系</td>
+          </tr>
+          <tr>
+            <td><strong>cs_role</strong></td>
+            <td>cs_staff_role_relation</td>
+            <td>role_id</td>
+            <td><span class="relation-type relation-nn">N:M</span></td>
+            <td>角色可分配给多个人员</td>
+          </tr>
+          <tr>
+            <td><strong>cs_staff</strong></td>
+            <td>complaint_record</td>
+            <td>handler_id</td>
+            <td><span class="relation-type relation-1n">1:N</span></td>
+            <td>一个人员可处理多条投诉</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- 数据量估算 -->
+    <div class="relation-table">
+      <h3>📊 数据量估算</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>表名</th>
+            <th>预估日增量</th>
+            <th>保留周期</th>
+            <th>预估总量(3年)</th>
+            <th>分表建议</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>complaint_record</td>
+            <td>1,000 - 5,000</td>
+            <td>3年</td>
+            <td>500万 - 1000万</td>
+            <td>✅ 建议按user_id取模分表</td>
+          </tr>
+          <tr>
+            <td>complaint_operation_log</td>
+            <td>3,000 - 15,000</td>
+            <td>1年</td>
+            <td>500万 - 1000万</td>
+            <td>✅ 建议按complaint_id分表</td>
+          </tr>
+          <tr>
+            <td>refund_record</td>
+            <td>500 - 2,000</td>
+            <td>3年</td>
+            <td>200万 - 500万</td>
+            <td>✅ 建议按user_id取模分表</td>
+          </tr>
+          <tr>
+            <td>user_behavior_record</td>
+            <td>10万 - 50万</td>
+            <td>90天</td>
+            <td>按需清理</td>
+            <td>⚠️ 定期清理历史数据</td>
+          </tr>
+          <tr>
+            <td>ADS主题表</td>
+            <td>按日汇总</td>
+            <td>2年</td>
+            <td>数据量小</td>
+            <td>无需分表</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#EEF1FF',
+        primaryTextColor: '#1F2937',
+        primaryBorderColor: '#4F46E5',
+        lineColor: '#6B7280',
+        secondaryColor: '#FFFBEB',
+        tertiaryColor: '#ECFDF5',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontSize: '13px'
+      },
+      er: {
+        diagramPadding: 20,
+        useMaxWidth: true
+      }
+    });
+  </script>
+</body>
+</html>
